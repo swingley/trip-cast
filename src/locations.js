@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import DatePicker from 'react-datepicker';
+import _ from 'underscore';
 import moment from 'moment';
+import keys from './keys';
 
 import '../node_modules/react-datepicker/dist/react-datepicker.css';
 
@@ -9,21 +11,25 @@ let stopLabels = [
   'Sixth', 'Seventh', 'Eighth', 'Ninth', 'Tenth'
 ];
 
+// Only search administrative areas in the US.
+let mapzenSearch = `https://search.mapzen.com/v1/autocomplete?boundary.country=US&layers=coarse&api_key=${keys.mapzen}`;
+
 class Locations extends Component {
   constructor(props) {
     super(props);
     this.state = { 
       inputs: [0, 1], 
       stops: [{ 
-        place: 'San Diego, CA', when: moment() 
+        place: 'San Diego, CA', when: moment(), xy: [-122.3917, 40.5865]
       }, { 
-        place: 'Redding, CA', when: moment()
+        place: 'Redding, CA', when: moment(), xy: [-117.1611, 32.7157]
       }], 
       startDate: moment() 
     };
     this.appendInput = this.appendInput.bind(this);
     this.dateChange = this.dateChange.bind(this);
     this.forecast = this.forecast.bind(this);
+    this.autoComplete = _.debounce(this.autoComplete.bind(this), 200);
   }
   appendInput() {
     let { length } = this.state.inputs;
@@ -31,17 +37,18 @@ class Locations extends Component {
     this.setState({
       ...this.state,
       inputs: this.state.inputs.concat([length]),
-      stops: this.state.stops.concat({ place: '', when: moment() })
+      stops: this.state.stops.concat({ place: '', when: moment(), xy: [] })
     });
   }
   placeChange(e, index) {
-    console.log('place changed', e);
+    // console.log('place changed', e);
     let updated = this.state.stops.slice(0);
     updated[index].place = e.target.value;
     this.setState({
       ...this.state,
       stops: updated
     })
+    this.autoComplete(index);
   }
   dateChange(date, index) {
     let updated = this.state.stops.slice(0);
@@ -50,6 +57,18 @@ class Locations extends Component {
       ...this.state,
       stops: updated
     })
+  }
+  autoComplete(index) {
+    let { place } = this.state.stops[index];
+    console.log('autoComplete', place, 'mapzen key', keys.mapzen);
+    fetch(`${mapzenSearch}&text=${place}`)
+      .then(response => response.json())
+      .then(json => {
+        // console.log('...mapzen search results', json);
+        json.features.forEach(f => {
+          console.log(f.properties.label);
+        });
+      });
   }
   forecast() {
     console.log('state', this.state);
@@ -78,7 +97,7 @@ class Locations extends Component {
               />
             </div>
           })}
-          <button onClick={this.appendInput}>Add a where</button>
+          <button onClick={this.appendInput}>Add a place</button>
           <button onClick={this.forecast}>Get forecast</button>
         </div>
       </div>

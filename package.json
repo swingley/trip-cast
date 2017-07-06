@@ -10,7 +10,8 @@
     "numeral": "^2.0.6",
     "react": "^15.6.1",
     "react-datepicker": "^0.48.0",
-    "react-dom": "^15.6.1"
+    "react-dom": "^15.6.1",
+    "underscore": "^1.8.3"
   },
   "scripts": {
     "start": "react-scripts start",
