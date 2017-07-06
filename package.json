@@ -1,0 +1,21 @@
+{
+  "name": "trip-cast",
+  "version": "0.0.1",
+  "private": true,
+  "devDependencies": {
+    "react-scripts": "1.0.7"
+  },
+  "dependencies": {
+    "moment": "^2.18.1",
+    "numeral": "^2.0.6",
+    "react": "^15.6.1",
+    "react-datepicker": "^0.48.0",
+    "react-dom": "^15.6.1"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject"
+  }
+}
