@@ -20,9 +20,9 @@ class Locations extends Component {
     this.state = { 
       inputs: [0, 1], 
       stops: [{ 
-        place: 'San Diego, CA', when: moment(), xy: [-122.3917, 40.5865]
+        place: 'San Diego, CA', when: moment(), xy: [-122.3917, 40.5865], suggestions: []
       }, { 
-        place: 'Redding, CA', when: moment(), xy: [-117.1611, 32.7157]
+        place: 'Redding, CA', when: moment(), xy: [-117.1611, 32.7157], suggestions: []
       }], 
       startDate: moment() 
     };
@@ -33,17 +33,16 @@ class Locations extends Component {
   }
   appendInput() {
     let { length } = this.state.inputs;
-    console.log('appending...length is', length);
     this.setState({
       ...this.state,
       inputs: this.state.inputs.concat([length]),
-      stops: this.state.stops.concat({ place: '', when: moment(), xy: [] })
+      stops: this.state.stops.concat({ place: '', when: moment(), xy: [], suggestions: [] })
     });
   }
   placeChange(e, index) {
     // console.log('place changed', e);
-    let updated = this.state.stops.slice(0);
-    updated[index].place = e.target.value;
+    let updated = this.state.stops.slice(0)
+    updated[index].place = e.target.value
     this.setState({
       ...this.state,
       stops: updated
@@ -51,8 +50,8 @@ class Locations extends Component {
     this.autoComplete(index);
   }
   dateChange(date, index) {
-    let updated = this.state.stops.slice(0);
-    updated[index].when = date;
+    let updated = this.state.stops.slice(0)
+    updated[index].when = date
     this.setState({
       ...this.state,
       stops: updated
@@ -65,9 +64,16 @@ class Locations extends Component {
       .then(response => response.json())
       .then(json => {
         // console.log('...mapzen search results', json);
-        json.features.forEach(f => {
-          console.log(f.properties.label);
-        });
+        // json.features.forEach(f => {
+        //   console.log(f.properties.label);
+        // });
+        let labels = json.features.map(f => f.properties.label)
+        let updated = this.state.stops.slice(0)
+        updated[index].suggestions = labels
+        this.setState({
+          ...this.state,
+          stops:updated
+        })
       });
   }
   forecast() {
@@ -99,6 +105,19 @@ class Locations extends Component {
           })}
           <button onClick={this.appendInput}>Add a place</button>
           <button onClick={this.forecast}>Get forecast</button>
+          <div>Suggestions</div>
+          {this.state.stops.map((stop, index) => {
+            let stopKey = `stop-${index}`
+            return <div key={stopKey}>
+              {stop.place}
+              {stop.suggestions.map((suggestion, sIndex) => {
+                let suggestionKey = `suggestion-${index}-${sIndex}`
+                return <div key={suggestionKey}>
+                  {suggestion}
+                </div>
+              })}
+            </div>
+          })}
         </div>
       </div>
     );
