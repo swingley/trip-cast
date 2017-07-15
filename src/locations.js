@@ -1,8 +1,11 @@
 import React, { Component } from 'react';
+import Autocomplete from 'react-autocomplete';
 import DatePicker from 'react-datepicker';
 import _ from 'underscore';
 import moment from 'moment';
 import keys from './keys';
+import styles from './styles';
+import { empty, twoStops } from './stateOptions';
 
 import '../node_modules/react-datepicker/dist/react-datepicker.css';
 
@@ -17,19 +20,15 @@ let mapzenSearch = `https://search.mapzen.com/v1/autocomplete?boundary.country=U
 class Locations extends Component {
   constructor(props) {
     super(props);
-    this.state = { 
-      inputs: [0, 1], 
-      stops: [{ 
-        place: 'San Diego, CA', when: moment(), xy: [-122.3917, 40.5865], suggestions: []
-      }, { 
-        place: 'Redding, CA', when: moment(), xy: [-117.1611, 32.7157], suggestions: []
-      }], 
-      startDate: moment() 
-    };
+    this.state = twoStops;
+    // this.state = empty;
     this.appendInput = this.appendInput.bind(this);
     this.dateChange = this.dateChange.bind(this);
     this.forecast = this.forecast.bind(this);
-    this.autoComplete = _.debounce(this.autoComplete.bind(this), 200);
+    this.placeSearch = _.debounce(this.placeSearch.bind(this), 200);
+  }
+  componentDidMount(){
+    this.Autocomplete0.focus(); 
   }
   appendInput() {
     let { length } = this.state.inputs;
@@ -39,7 +38,7 @@ class Locations extends Component {
       stops: this.state.stops.concat({ place: '', when: moment(), xy: [], suggestions: [] })
     });
   }
-  placeChange(e, index) {
+  placeChange(e, index, search) {
     // console.log('place changed', e);
     let updated = this.state.stops.slice(0)
     updated[index].place = e.target.value
@@ -47,7 +46,9 @@ class Locations extends Component {
       ...this.state,
       stops: updated
     })
-    this.autoComplete(index);
+    if ( search ) {
+      this.placeSearch(index);
+    }
   }
   dateChange(date, index) {
     let updated = this.state.stops.slice(0)
@@ -57,9 +58,10 @@ class Locations extends Component {
       stops: updated
     })
   }
-  autoComplete(index) {
+  placeSearch(index) {
     let { place } = this.state.stops[index];
-    console.log('autoComplete', place, 'mapzen key', keys.mapzen);
+    console.log('placeSearch', place, 'mapzen key', keys.mapzen);
+    console.log('this...', this);
     fetch(`${mapzenSearch}&text=${place}`)
       .then(response => response.json())
       .then(json => {
@@ -67,7 +69,11 @@ class Locations extends Component {
         // json.features.forEach(f => {
         //   console.log(f.properties.label);
         // });
-        let labels = json.features.map(f => f.properties.label)
+        let labels = json.features.map(f => { 
+          // console.log(`mapzen result ${JSON.stringify(f)}`)
+          return { name: f.properties.label, coordinates: f.geometry.coordinates }
+        })
+        console.log(`auto complete request returned:  ${labels}`)
         let updated = this.state.stops.slice(0)
         updated[index].suggestions = labels
         this.setState({
@@ -89,12 +95,32 @@ class Locations extends Component {
             let key = `location-${input}`;
             let label = `${stopLabels[input]}:`;
             let dpKey = `when-${input}`;
-            let where = this.state.stops[input].place
-            let when = this.state.stops[input].when;
+            let { place, when, suggestions } = this.state.stops[input]
+            // console.log(`${label} suggestions:  ${JSON.stringify(suggestions)}`)
             return <div key={containerKey}>
               <label htmlFor={key}>{label}</label>
-              <input type="text" id={key} key={key} value={where} 
-                onChange={e => this.placeChange(e, input)} 
+              <Autocomplete
+                inputProps={{ id: {key} }}
+                value={place}
+                items={suggestions}
+                getItemValue={(item) => item.name}
+                menuStyle={styles.menu}
+                onSelect={(value, item) => {
+                  console.log('onSelect', this, item, place)
+                  let selected = { target: { value: value }}
+                  this.placeChange(selected, input, false)
+                }}
+                onChange={(event, value) => {
+                  //this.setState({ value })
+                  this.placeChange(event, input, true)
+                }}
+                renderItem={(item, isHighlighted) => (
+                  <div
+                    style={isHighlighted ? {...styles.item, background: 'lightgray'} : {...styles.item, background: 'white'}}
+                    key={item.abbr}
+                  >{item.name}</div>
+                )}
+                ref={el => this[`Autocomplete${input}`] = el}
               />
               <DatePicker
                 selected={when}
@@ -105,19 +131,6 @@ class Locations extends Component {
           })}
           <button onClick={this.appendInput}>Add a place</button>
           <button onClick={this.forecast}>Get forecast</button>
-          <div>Suggestions</div>
-          {this.state.stops.map((stop, index) => {
-            let stopKey = `stop-${index}`
-            return <div key={stopKey}>
-              {stop.place}
-              {stop.suggestions.map((suggestion, sIndex) => {
-                let suggestionKey = `suggestion-${index}-${sIndex}`
-                return <div key={suggestionKey}>
-                  {suggestion}
-                </div>
-              })}
-            </div>
-          })}
         </div>
       </div>
     );

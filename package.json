@@ -9,6 +9,7 @@
     "moment": "^2.18.1",
     "numeral": "^2.0.6",
     "react": "^15.6.1",
+    "react-autocomplete": "^1.5.9",
     "react-datepicker": "^0.48.0",
     "react-dom": "^15.6.1",
     "underscore": "^1.8.3"
