@@ -5,7 +5,8 @@ import _ from 'underscore';
 import moment from 'moment';
 import keys from './keys';
 import styles from './styles';
-import { empty, twoStops } from './stateOptions';
+// import { empty, twoStops } from './stateOptions';
+import { twoStops } from './stateOptions';
 
 import '../node_modules/react-datepicker/dist/react-datepicker.css';
 
@@ -14,8 +15,13 @@ let stopLabels = [
   'Sixth', 'Seventh', 'Eighth', 'Ninth', 'Tenth'
 ];
 
+let dateForamt = 'YYYY-MM-DD'
+let nwsDateFormat = 'YYYY-MM-DDThh:mm:ssZ'
+
 // Only search administrative areas in the US.
 let mapzenSearch = `https://search.mapzen.com/v1/autocomplete?boundary.country=US&layers=coarse&api_key=${keys.mapzen}`;
+// National Weather Service API root.
+let nws = `https://api.weather.gov/points/`
 
 class Locations extends Component {
   constructor(props) {
@@ -35,13 +41,16 @@ class Locations extends Component {
     this.setState({
       ...this.state,
       inputs: this.state.inputs.concat([length]),
-      stops: this.state.stops.concat({ place: '', when: moment(), xy: [], suggestions: [] })
+      stops: this.state.stops.concat({ place: '', when: moment().add('days', 1), xy: [], suggestions: [] })
     });
   }
   placeChange(e, index, search) {
     // console.log('place changed', e);
     let updated = this.state.stops.slice(0)
     updated[index].place = e.target.value
+    if ( e.target.coordinates && e.target.coordinates.length === 2 ) {
+      updated[index].xy = e.target.coordinates
+    }
     this.setState({
       ...this.state,
       stops: updated
@@ -60,8 +69,8 @@ class Locations extends Component {
   }
   placeSearch(index) {
     let { place } = this.state.stops[index];
-    console.log('placeSearch', place, 'mapzen key', keys.mapzen);
-    console.log('this...', this);
+    // console.log('placeSearch', place, 'mapzen key', keys.mapzen);
+    // console.log('this...', this);
     fetch(`${mapzenSearch}&text=${place}`)
       .then(response => response.json())
       .then(json => {
@@ -73,7 +82,7 @@ class Locations extends Component {
           // console.log(`mapzen result ${JSON.stringify(f)}`)
           return { name: f.properties.label, coordinates: f.geometry.coordinates }
         })
-        console.log(`auto complete request returned:  ${labels}`)
+        // console.log(`auto complete request returned:  ${labels}`)
         let updated = this.state.stops.slice(0)
         updated[index].suggestions = labels
         this.setState({
@@ -83,9 +92,60 @@ class Locations extends Component {
       });
   }
   forecast() {
-    console.log('state', this.state);
+    // console.log('state', this.state);
+    // Places and dates:
+    let stopCount = this.state.stops.length
+    let forecastsRetrieved = 0
+    let forecasts = {}
+    this.state.stops.forEach(stop => {
+      console.log(stop.xy, 'on', stop.when.format(dateForamt))
+      // What does the NWS API call for this look like?
+      // https://api.weather.gov/points/40.5865,-122.3917/forecast
+      // parse date from NWS response:
+      // let startDate = '2017-07-18T18:00:00-07:00'
+      // let startFormat = 'YYYY-MM-DDThh:mm:ssZ'
+      // moment(startDate, startFormat).format('MM-DD-YYYY')
+      fetch(`${nws}${stop.xy[1]},${stop.xy[0]}/forecast`)
+        .then(response => response.json())
+        .then(json => {
+          console.log('json forecast', stop.place, json)
+          // TODO:  grap json.properties.periods for forecast stuff
+          // Increment forecastsRetrieved and save info in forecasts object.
+          forecasts[stop.place] = json
+          forecastsRetrieved += 1
+          if (forecastsRetrieved === stopCount ) {
+            console.log('...all done, update state!', forecasts)
+            // Match a stop with its forecast:
+            let updated = this.state.stops.slice(0)
+            updated.forEach(stop => {
+              if ( forecasts[stop.place] ) {
+                stop.forecastResponse = forecasts[stop.place]
+                stop.weather = []
+                let stopDate = stop.when.format(dateForamt)
+                // Loop through periods, find matches.
+                let { periods } = stop.forecastResponse.properties
+                periods.forEach(period => {
+                  let periodMoment = moment(period.endTime, nwsDateFormat)
+                  if ( periodMoment.format(dateForamt) === stopDate ) {
+                    stop.weather.push(period)
+                  }
+                })
+              }
+            })
+            console.log('updated', updated)
+            this.setState({
+              ...this.state,
+              stops: updated
+            })
+          }
+        })
+    })
   }
   render() {
+    let stopsHaveForecast = this.state.stops.reduce((forecastsExist, stop) => {
+      return stop.hasOwnProperty('weather') && stop.weather[0]
+    }, true)
+
     return (
       <div className="locations-container">
         <div className="locations-header">
@@ -96,6 +156,8 @@ class Locations extends Component {
             let label = `${stopLabels[input]}:`;
             let dpKey = `when-${input}`;
             let { place, when, suggestions } = this.state.stops[input]
+            let pickerStart = moment()
+            let pickerEnd = moment().add(10, 'days')
             // console.log(`${label} suggestions:  ${JSON.stringify(suggestions)}`)
             return <div key={containerKey}>
               <label htmlFor={key}>{label}</label>
@@ -106,8 +168,13 @@ class Locations extends Component {
                 getItemValue={(item) => item.name}
                 menuStyle={styles.menu}
                 onSelect={(value, item) => {
-                  console.log('onSelect', this, item, place)
-                  let selected = { target: { value: value }}
+                  //console.log('onSelect', this, item, place)
+                  let selected = {
+                    target: {
+                      value: value,
+                      coordinates: item.coordinates
+                    }
+                  }
                   this.placeChange(selected, input, false)
                 }}
                 onChange={(event, value) => {
@@ -126,11 +193,23 @@ class Locations extends Component {
                 selected={when}
                 onChange={e => this.dateChange(e, input)}
                 key={dpKey}
+                minDate={pickerStart}
+                maxDate={pickerEnd}
               />
             </div>
           })}
           <button onClick={this.appendInput}>Add a place</button>
           <button onClick={this.forecast}>Get forecast</button>
+          {stopsHaveForecast && 
+            <div className='lefty'>
+              <div>Weather</div>
+              {this.state.stops.map(stop => {
+                return (
+                  <div>{stop.place}: {stop.weather[0].shortForecast}</div>
+                )
+              })}
+            </div>
+          }
         </div>
       </div>
     );

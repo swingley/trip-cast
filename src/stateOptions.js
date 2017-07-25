@@ -10,9 +10,9 @@ export let empty = {
 export let twoStops = { 
   inputs: [0, 1], 
   stops: [{ 
-    place: 'San Diego, CA', when: moment(), xy: [-122.3917, 40.5865], suggestions: []
+    place: 'San Diego, CA', when: moment().add('days', 1), xy: [-122.3917, 40.5865], suggestions: []
   }, { 
-    place: 'Redding, CA', when: moment(), xy: [-117.1611, 32.7157], suggestions: []
+    place: 'Redding, CA', when: moment().add('days', 1), xy: [-117.1611, 32.7157], suggestions: []
   }], 
   startDate: moment() 
 };

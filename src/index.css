@@ -3,3 +3,15 @@ body {
   padding: 0;
   font-family: sans-serif;
 }
+
+.locations-container {
+  display: flex;
+  margin: 0 auto;
+  max-width: 25em;
+  width: 50%;
+}
+
+.lefty {
+  padding: 1em 0 0 0;
+  text-align: left;
+}
