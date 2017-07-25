@@ -1,14 +1,14 @@
-import React, { Component } from 'react';
-import Autocomplete from 'react-autocomplete';
-import DatePicker from 'react-datepicker';
-import _ from 'underscore';
-import moment from 'moment';
-import keys from './keys';
-import styles from './styles';
+import React, { Component } from 'react'
+import Autocomplete from 'react-autocomplete'
+import DatePicker from 'react-datepicker'
+import _ from 'underscore'
+import moment from 'moment'
+import keys from './keys'
+import styles from './styles'
 // import { empty, twoStops } from './stateOptions';
-import { twoStops } from './stateOptions';
+import { twoStops } from './stateOptions'
 
-import '../node_modules/react-datepicker/dist/react-datepicker.css';
+import '../node_modules/react-datepicker/dist/react-datepicker.css'
 
 let stopLabels = [
   'First', 'Second', 'Third', 'Fourth', 'Fifth', 

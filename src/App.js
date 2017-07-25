@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import Locations from './locations';
+import Junk from './junk';
 import './App.css';
 
 class App extends Component {
@@ -10,6 +11,7 @@ class App extends Component {
           <h2>Road<strong>trip</strong> Fore<strong>cast</strong></h2>
         </div>
         <Locations />
+        <Junk />
       </div>
     );
   }
