@@ -125,6 +125,7 @@ class Locations extends Component {
                 // Loop through periods, find matches.
                 let { periods } = stop.forecastResponse.properties
                 periods.forEach(period => {
+                  console.log(stop.place, period.shortForecast)
                   let periodMoment = moment(period.endTime, nwsDateFormat)
                   if ( periodMoment.format(dateForamt) === stopDate ) {
                     stop.weather.push(period)
@@ -150,7 +151,7 @@ class Locations extends Component {
       <div className="locations-container">
         <div className="locations-header">
           <h2>Wheres</h2>
-          {this.state.inputs.map(input => {
+          {this.state.inputs.map((input, index) => {
             let containerKey = `container-${input}`;
             let key = `location-${input}`;
             let label = `${stopLabels[input]}:`;
@@ -196,6 +197,9 @@ class Locations extends Component {
                 minDate={pickerStart}
                 maxDate={pickerEnd}
               />
+              {this.state.stops && this.state.stops[index] && stopsHaveForecast &&
+                <span>{this.state.stops[index].weather[0].shortForecast}</span>
+              }
             </div>
           })}
           <button onClick={this.appendInput}>Add a place</button>
