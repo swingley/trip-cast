@@ -4,7 +4,8 @@ let emptyStop = { place: '', when: moment(), xy: [], suggestions: [] };
 export let empty = {
   inputs:[0, 1],
   stops: [ Object.assign({}, emptyStop), Object.assign({}, emptyStop) ],
-  startDate: moment()
+  startDate: moment(),
+  isFetching: false
 };
 
 export let twoStops = { 
@@ -14,5 +15,6 @@ export let twoStops = {
   }, { 
     place: 'Redding, CA', when: moment().add('days', 1), xy: [-117.1611, 32.7157], suggestions: []
   }], 
-  startDate: moment() 
+  startDate: moment(),
+  isFetching: false
 };

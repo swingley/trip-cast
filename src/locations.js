@@ -3,6 +3,7 @@ import Autocomplete from 'react-autocomplete'
 import DatePicker from 'react-datepicker'
 import _ from 'underscore'
 import moment from 'moment'
+import Spinner from './spinner'
 import keys from './keys'
 import styles from './styles'
 // import { empty, twoStops } from './stateOptions';
@@ -11,8 +12,8 @@ import { twoStops } from './stateOptions'
 import '../node_modules/react-datepicker/dist/react-datepicker.css'
 
 let stopLabels = [
-  'First', 'Second', 'Third', 'Fourth', 'Fifth', 
-  'Sixth', 'Seventh', 'Eighth', 'Ninth', 'Tenth'
+  '1st', '2nd', '3rd', '4th', '5th', 
+  '6th', '7th', '8th', '9th', '10th'
 ];
 
 let dateForamt = 'YYYY-MM-DD'
@@ -136,16 +137,26 @@ class Locations extends Component {
             console.log('updated', updated)
             this.setState({
               ...this.state,
+              isFetching: false,
               stops: updated
             })
           }
         })
+    })
+    this.setState({
+      ...this.state,
+      isFetching: true
     })
   }
   render() {
     let stopsHaveForecast = this.state.stops.reduce((forecastsExist, stop) => {
       return stop.hasOwnProperty('weather') && stop.weather[0]
     }, true)
+    let loading = null
+    if ( this.state.isFetching ) {
+      console.log('showing a spinner...')
+      loading = <Spinner />
+    }
 
     return (
       <div className="locations-container">
@@ -163,7 +174,7 @@ class Locations extends Component {
             return <div key={containerKey}>
               <label htmlFor={key}>{label}</label>
               <Autocomplete
-                inputProps={{ id: {key} }}
+                inputProps={{ id: key, type: 'text' }}
                 value={place}
                 items={suggestions}
                 getItemValue={(item) => item.name}
@@ -204,12 +215,13 @@ class Locations extends Component {
           })}
           <button onClick={this.appendInput}>Add a place</button>
           <button onClick={this.forecast}>Get forecast</button>
+          {loading} 
           {stopsHaveForecast && 
             <div className='lefty'>
               <div>Weather</div>
-              {this.state.stops.map(stop => {
+              {this.state.stops.map((stop,index) => {
                 return (
-                  <div>{stop.place}: {stop.weather[0].shortForecast}</div>
+                  <div key={index}>{stop.place}: {stop.weather[0].shortForecast}</div>
                 )
               })}
             </div>

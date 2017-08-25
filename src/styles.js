@@ -18,6 +18,8 @@ export default {
     background: 'rgba(255, 255, 255, 0.9)',
     padding: '2px 0',
     fontSize: '90%',
+    marginLeft: '-10px',
+    marginTop: '5px',
     position: 'fixed',
     overflow: 'auto',
     maxHeight: '50%',
