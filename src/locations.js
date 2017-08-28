@@ -42,7 +42,7 @@ class Locations extends Component {
     this.setState({
       ...this.state,
       inputs: this.state.inputs.concat([length]),
-      stops: this.state.stops.concat({ place: '', when: moment().add('days', 1), xy: [], suggestions: [] })
+      stops: this.state.stops.concat({ place: '', when: moment().add(1, 'days'), xy: [], suggestions: [] })
     });
   }
   placeChange(e, index, search) {
@@ -70,6 +70,7 @@ class Locations extends Component {
   }
   placeSearch(index) {
     let { place } = this.state.stops[index];
+    console.log('place search, place', place);
     // console.log('placeSearch', place, 'mapzen key', keys.mapzen);
     // console.log('this...', this);
     fetch(`${mapzenSearch}&text=${place}`)
@@ -92,9 +93,29 @@ class Locations extends Component {
         })
       });
   }
+  validateStops() {
+    // TODO:  check that place for all stops isn't an empty string.
+    // Call forecast() if all is right.
+    // If not, set new state with a missing: true on each empty stop.
+    // Make inputs red if they're empty. And focus on missing?
+  }
   forecast() {
     // console.log('state', this.state);
     // Places and dates:
+    // Check if any boxes are empty.
+    let missingPlaces = false;
+    let updated = this.state.stops.slice(0)
+    updated.forEach(stop => {
+      if ( !stop.place ) {
+        missingPlaces = true
+      }
+    })
+    if ( missingPlaces ) {
+      this.setState(updated)
+      return
+    }
+
+    // All stops have places, get forecasts.
     let stopCount = this.state.stops.length
     let forecastsRetrieved = 0
     let forecasts = {}
@@ -126,7 +147,7 @@ class Locations extends Component {
                 // Loop through periods, find matches.
                 let { periods } = stop.forecastResponse.properties
                 periods.forEach(period => {
-                  console.log(stop.place, period.shortForecast)
+                  // console.log(stop.place, period.shortForecast)
                   let periodMoment = moment(period.endTime, nwsDateFormat)
                   if ( periodMoment.format(dateForamt) === stopDate ) {
                     stop.weather.push(period)
@@ -170,11 +191,13 @@ class Locations extends Component {
             let { place, when, suggestions } = this.state.stops[input]
             let pickerStart = moment()
             let pickerEnd = moment().add(10, 'days')
+            let inputProps = { id: key, type: 'text' }
             // console.log(`${label} suggestions:  ${JSON.stringify(suggestions)}`)
             return <div key={containerKey}>
               <label htmlFor={key}>{label}</label>
+              {/*put a red outline around empty inputs */}
               <Autocomplete
-                inputProps={{ id: key, type: 'text' }}
+                inputProps={this.state.stops[index].place ? inputProps : { className: 'missing', ...inputProps }}
                 value={place}
                 items={suggestions}
                 getItemValue={(item) => item.name}

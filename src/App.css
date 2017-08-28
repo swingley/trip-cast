@@ -34,6 +34,10 @@ input[type="text"] {
   width: 8em;
 }
 
+input[type="text"].missing {
+  border: 1px solid #ff8585;
+}
+
 button {
   padding: 10px;
   background: white;
