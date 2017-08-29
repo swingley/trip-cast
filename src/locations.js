@@ -14,25 +14,27 @@ import '../node_modules/react-datepicker/dist/react-datepicker.css'
 let stopLabels = [
   '1st', '2nd', '3rd', '4th', '5th', 
   '6th', '7th', '8th', '9th', '10th'
-];
+]
 
 let dateForamt = 'YYYY-MM-DD'
 let nwsDateFormat = 'YYYY-MM-DDThh:mm:ssZ'
 
 // Only search administrative areas in the US.
-let mapzenSearch = `https://search.mapzen.com/v1/autocomplete?boundary.country=US&layers=coarse&api_key=${keys.mapzen}`;
+let mapzenSearch = `https://search.mapzen.com/v1/autocomplete?boundary.country=US&layers=coarse&api_key=${keys.mapzen}`
 // National Weather Service API root.
 let nws = `https://api.weather.gov/points/`
 
 class Locations extends Component {
+  // TODO:  use property initializer syntax instead?
   constructor(props) {
-    super(props);
-    this.state = twoStops;
+    super(props)
+    this.state = twoStops
     // this.state = empty;
     this.appendInput = this.appendInput.bind(this);
     this.dateChange = this.dateChange.bind(this);
     this.forecast = this.forecast.bind(this);
     this.placeSearch = _.debounce(this.placeSearch.bind(this), 200);
+    this.validateStops = this.validateStops.bind(this);
   }
   componentDidMount(){
     this.Autocomplete0.focus(); 
@@ -43,12 +45,13 @@ class Locations extends Component {
       ...this.state,
       inputs: this.state.inputs.concat([length]),
       stops: this.state.stops.concat({ place: '', when: moment().add(1, 'days'), xy: [], suggestions: [] })
-    });
+    })
   }
   placeChange(e, index, search) {
     // console.log('place changed', e);
     let updated = this.state.stops.slice(0)
     updated[index].place = e.target.value
+    delete updated[index].missing
     if ( e.target.coordinates && e.target.coordinates.length === 2 ) {
       updated[index].xy = e.target.coordinates
     }
@@ -69,8 +72,8 @@ class Locations extends Component {
     })
   }
   placeSearch(index) {
-    let { place } = this.state.stops[index];
-    console.log('place search, place', place);
+    let { place } = this.state.stops[index]
+    // console.log('place search, place', place);
     // console.log('placeSearch', place, 'mapzen key', keys.mapzen);
     // console.log('this...', this);
     fetch(`${mapzenSearch}&text=${place}`)
@@ -78,8 +81,8 @@ class Locations extends Component {
       .then(json => {
         // console.log('...mapzen search results', json);
         // json.features.forEach(f => {
-        //   console.log(f.properties.label);
-        // });
+        //   console.log(f.properties.label)
+        // })
         let labels = json.features.map(f => { 
           // console.log(`mapzen result ${JSON.stringify(f)}`)
           return { name: f.properties.label, coordinates: f.geometry.coordinates }
@@ -91,29 +94,39 @@ class Locations extends Component {
           ...this.state,
           stops:updated
         })
-      });
+      })
   }
   validateStops() {
-    // TODO:  check that place for all stops isn't an empty string.
-    // Call forecast() if all is right.
-    // If not, set new state with a missing: true on each empty stop.
-    // Make inputs red if they're empty. And focus on missing?
-  }
-  forecast() {
-    // console.log('state', this.state);
     // Places and dates:
     // Check if any boxes are empty.
-    let missingPlaces = false;
-    let updated = this.state.stops.slice(0)
-    updated.forEach(stop => {
-      if ( !stop.place ) {
-        missingPlaces = true
-      }
+    // Call forecast() if all is right.
+    // If not, set new state with a missing: true on each empty stop.
+    // Make input border red if they're empty. 
+    // TODO:  check dates too.
+    
+    let missingPlaces = []
+    this.state.stops.forEach((stop, index) => {
+      if ( !stop.place.trim() ) {
+        missingPlaces.push(index)
+      } 
     })
-    if ( missingPlaces ) {
-      this.setState(updated)
+    console.log('validating...', missingPlaces)
+    if ( missingPlaces.length > 0 ) {
+      let updated = this.state.stops.slice(0)
+      missingPlaces.forEach(index => {
+        updated[index].missing = true
+      })
+      this.setState({
+        ...this.state,
+        stops: updated
+      })
       return
-    }
+    } else {
+      this.forecast()
+    } 
+  }
+  forecast() {
+    // console.log('state', this.state)
 
     // All stops have places, get forecasts.
     let stopCount = this.state.stops.length
@@ -131,7 +144,6 @@ class Locations extends Component {
         .then(response => response.json())
         .then(json => {
           console.log('json forecast', stop.place, json)
-          // TODO:  grap json.properties.periods for forecast stuff
           // Increment forecastsRetrieved and save info in forecasts object.
           forecasts[stop.place] = json
           forecastsRetrieved += 1
@@ -184,10 +196,10 @@ class Locations extends Component {
         <div className="locations-header">
           <h2>Wheres</h2>
           {this.state.inputs.map((input, index) => {
-            let containerKey = `container-${input}`;
-            let key = `location-${input}`;
-            let label = `${stopLabels[input]}:`;
-            let dpKey = `when-${input}`;
+            let containerKey = `container-${input}`
+            let key = `location-${input}`
+            let label = `${stopLabels[input]}:`
+            let dpKey = `when-${input}`
             let { place, when, suggestions } = this.state.stops[input]
             let pickerStart = moment()
             let pickerEnd = moment().add(10, 'days')
@@ -197,7 +209,11 @@ class Locations extends Component {
               <label htmlFor={key}>{label}</label>
               {/*put a red outline around empty inputs */}
               <Autocomplete
-                inputProps={this.state.stops[index].place ? inputProps : { className: 'missing', ...inputProps }}
+                inputProps={
+                  this.state.stops[index].missing ? 
+                    { className: 'missing', ...inputProps } :
+                    inputProps
+                }
                 value={place}
                 items={suggestions}
                 getItemValue={(item) => item.name}
@@ -237,7 +253,7 @@ class Locations extends Component {
             </div>
           })}
           <button onClick={this.appendInput}>Add a place</button>
-          <button onClick={this.forecast}>Get forecast</button>
+          <button onClick={this.validateStops}>Get forecast</button>
           {loading} 
           {stopsHaveForecast && 
             <div className='lefty'>
