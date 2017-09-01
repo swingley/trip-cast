@@ -25,21 +25,12 @@ let mapzenSearch = `https://search.mapzen.com/v1/autocomplete?boundary.country=U
 let nws = `https://api.weather.gov/points/`
 
 class Locations extends Component {
-  // TODO:  use property initializer syntax instead?
-  constructor(props) {
-    super(props)
-    this.state = twoStops
-    // this.state = empty;
-    this.appendInput = this.appendInput.bind(this);
-    this.dateChange = this.dateChange.bind(this);
-    this.forecast = this.forecast.bind(this);
-    this.placeSearch = _.debounce(this.placeSearch.bind(this), 200);
-    this.validateStops = this.validateStops.bind(this);
-  }
+  state = twoStops
+  
   componentDidMount(){
     this.Autocomplete0.focus(); 
   }
-  appendInput() {
+  appendInput = () => {
     let { length } = this.state.inputs;
     this.setState({
       ...this.state,
@@ -63,7 +54,7 @@ class Locations extends Component {
       this.placeSearch(index);
     }
   }
-  dateChange(date, index) {
+  dateChange = (date, index) => {
     let updated = this.state.stops.slice(0)
     updated[index].when = date
     this.setState({
@@ -71,7 +62,7 @@ class Locations extends Component {
       stops: updated
     })
   }
-  placeSearch(index) {
+  placeSearch = (index) => {
     let { place } = this.state.stops[index]
     // console.log('place search, place', place);
     // console.log('placeSearch', place, 'mapzen key', keys.mapzen);
@@ -96,7 +87,7 @@ class Locations extends Component {
         })
       })
   }
-  validateStops() {
+  validateStops = () => {
     // Places and dates:
     // Check if any boxes are empty.
     // Call forecast() if all is right.
@@ -125,7 +116,7 @@ class Locations extends Component {
       this.forecast()
     } 
   }
-  forecast() {
+  forecast = () => {
     // console.log('state', this.state)
 
     // All stops have places, get forecasts.
