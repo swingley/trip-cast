@@ -3,8 +3,8 @@ import Autocomplete from 'react-autocomplete'
 import DatePicker from 'react-datepicker'
 import _ from 'underscore'
 import moment from 'moment'
+import apis from './utils/apis'
 import Spinner from './spinner'
-import keys from './keys'
 import styles from './styles'
 // import { empty, twoStops } from './stateOptions';
 import { twoStops } from './stateOptions'
@@ -19,18 +19,16 @@ let stopLabels = [
 let dateForamt = 'YYYY-MM-DD'
 let nwsDateFormat = 'YYYY-MM-DDThh:mm:ssZ'
 
-// Only search administrative areas in the US.
-let mapzenSearch = `https://search.mapzen.com/v1/autocomplete?boundary.country=US&layers=coarse&api_key=${keys.mapzen}`
-// National Weather Service API root.
-let nws = `https://api.weather.gov/points/`
-
 class Locations extends Component {
   state = twoStops
-  
+
+  componentWillMount() {
+    this.placeSearch = _.debounce(this.placeSearch.bind(this), 200);
+  }
   componentDidMount(){
     this.Autocomplete0.focus(); 
   }
-  appendInput = () => {
+  appendLocation = () => {
     let { length } = this.state.inputs;
     this.setState({
       ...this.state,
@@ -40,6 +38,9 @@ class Locations extends Component {
   }
   placeChange(e, index, search) {
     // console.log('place changed', e);
+    if ( e.target.value.length < 3 ) {
+      search = false;
+    }
     let updated = this.state.stops.slice(0)
     updated[index].place = e.target.value
     delete updated[index].missing
@@ -64,21 +65,11 @@ class Locations extends Component {
   }
   placeSearch = (index) => {
     let { place } = this.state.stops[index]
-    // console.log('place search, place', place);
-    // console.log('placeSearch', place, 'mapzen key', keys.mapzen);
-    // console.log('this...', this);
-    fetch(`${mapzenSearch}&text=${place}`)
-      .then(response => response.json())
+    apis.getPlaces(place)
       .then(json => {
-        // console.log('...mapzen search results', json);
-        // json.features.forEach(f => {
-        //   console.log(f.properties.label)
-        // })
         let labels = json.features.map(f => { 
-          // console.log(`mapzen result ${JSON.stringify(f)}`)
           return { name: f.properties.label, coordinates: f.geometry.coordinates }
         })
-        // console.log(`auto complete request returned:  ${labels}`)
         let updated = this.state.stops.slice(0)
         updated[index].suggestions = labels
         this.setState({
@@ -101,7 +92,7 @@ class Locations extends Component {
         missingPlaces.push(index)
       } 
     })
-    console.log('validating...', missingPlaces)
+    // console.log('validating...', missingPlaces)
     if ( missingPlaces.length > 0 ) {
       let updated = this.state.stops.slice(0)
       missingPlaces.forEach(index => {
@@ -117,29 +108,22 @@ class Locations extends Component {
     } 
   }
   forecast = () => {
-    // console.log('state', this.state)
-
     // All stops have places, get forecasts.
     let stopCount = this.state.stops.length
     let forecastsRetrieved = 0
     let forecasts = {}
     this.state.stops.forEach(stop => {
-      console.log(stop.xy, 'on', stop.when.format(dateForamt))
-      // What does the NWS API call for this look like?
-      // https://api.weather.gov/points/40.5865,-122.3917/forecast
+      // console.log(stop.xy, 'on', stop.when.format(dateForamt))
       // parse date from NWS response:
       // let startDate = '2017-07-18T18:00:00-07:00'
       // let startFormat = 'YYYY-MM-DDThh:mm:ssZ'
       // moment(startDate, startFormat).format('MM-DD-YYYY')
-      fetch(`${nws}${stop.xy[1]},${stop.xy[0]}/forecast`)
-        .then(response => response.json())
+      apis.getForecast(stop)
         .then(json => {
-          console.log('json forecast', stop.place, json)
           // Increment forecastsRetrieved and save info in forecasts object.
           forecasts[stop.place] = json
           forecastsRetrieved += 1
           if (forecastsRetrieved === stopCount ) {
-            console.log('...all done, update state!', forecasts)
             // Match a stop with its forecast:
             let updated = this.state.stops.slice(0)
             updated.forEach(stop => {
@@ -158,7 +142,7 @@ class Locations extends Component {
                 })
               }
             })
-            console.log('updated', updated)
+            // console.log('updated', updated)
             this.setState({
               ...this.state,
               isFetching: false,
@@ -178,7 +162,6 @@ class Locations extends Component {
     }, true)
     let loading = null
     if ( this.state.isFetching ) {
-      console.log('showing a spinner...')
       loading = <Spinner />
     }
 
@@ -243,7 +226,7 @@ class Locations extends Component {
               }
             </div>
           })}
-          <button onClick={this.appendInput}>Add a place</button>
+          <button onClick={this.appendLocation}>Add a place</button>
           <button onClick={this.validateStops}>Get forecast</button>
           {loading} 
           {stopsHaveForecast && 
