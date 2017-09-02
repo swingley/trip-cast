@@ -1,11 +1,9 @@
 import React, { Component } from 'react'
-import Autocomplete from 'react-autocomplete'
-import DatePicker from 'react-datepicker'
 import _ from 'underscore'
 import moment from 'moment'
+import Location from './location'
 import apis from './utils/apis'
 import Spinner from './spinner'
-import styles from './styles'
 // import { empty, twoStops } from './stateOptions';
 import { twoStops } from './stateOptions'
 
@@ -19,14 +17,17 @@ let stopLabels = [
 let dateForamt = 'YYYY-MM-DD'
 let nwsDateFormat = 'YYYY-MM-DDThh:mm:ssZ'
 
-class Locations extends Component {
+class LocationsContainer extends Component {
   state = twoStops
 
   componentWillMount() {
+    // Dont' hammer the place search service.
     this.placeSearch = _.debounce(this.placeSearch.bind(this), 200);
   }
-  componentDidMount(){
-    this.Autocomplete0.focus(); 
+  componentDidMount() {
+    // Figure out how to give focus to first Location component.
+    // this.Autocomplete0.focus(); 
+    // The line above doesn't work since refactoring.
   }
   appendLocation = () => {
     let { length } = this.state.inputs;
@@ -36,7 +37,7 @@ class Locations extends Component {
       stops: this.state.stops.concat({ place: '', when: moment().add(1, 'days'), xy: [], suggestions: [] })
     })
   }
-  placeChange(e, index, search) {
+  placeChange = (e, index, search) => {
     // console.log('place changed', e);
     if ( e.target.value.length < 3 ) {
       search = false;
@@ -170,61 +171,21 @@ class Locations extends Component {
         <div className="locations-header">
           <h2>Wheres</h2>
           {this.state.inputs.map((input, index) => {
-            let containerKey = `container-${input}`
-            let key = `location-${input}`
-            let label = `${stopLabels[input]}:`
-            let dpKey = `when-${input}`
-            let { place, when, suggestions } = this.state.stops[input]
-            let pickerStart = moment()
-            let pickerEnd = moment().add(10, 'days')
-            let inputProps = { id: key, type: 'text' }
+            let stopInfo = {
+              containerKey: `container-${input}`,
+              label: `${stopLabels[input]}:`,
+              dpKey: `when-${input}`,
+              input: input,
+              placeChange: this.placeChange,
+              stop: this.state.stops[input],
+              pickerStart: moment(),
+              pickerEnd: moment().add(10, 'days'),
+              dateChange: this.dateChange,
+              inputProps: { type: 'text' },
+              autoComplete: this[`Autocomplete${input}`]
+            }
             // console.log(`${label} suggestions:  ${JSON.stringify(suggestions)}`)
-            return <div key={containerKey}>
-              <label htmlFor={key}>{label}</label>
-              {/*put a red outline around empty inputs */}
-              <Autocomplete
-                inputProps={
-                  this.state.stops[index].missing ? 
-                    { className: 'missing', ...inputProps } :
-                    inputProps
-                }
-                value={place}
-                items={suggestions}
-                getItemValue={(item) => item.name}
-                menuStyle={styles.menu}
-                onSelect={(value, item) => {
-                  //console.log('onSelect', this, item, place)
-                  let selected = {
-                    target: {
-                      value: value,
-                      coordinates: item.coordinates
-                    }
-                  }
-                  this.placeChange(selected, input, false)
-                }}
-                onChange={(event, value) => {
-                  //this.setState({ value })
-                  this.placeChange(event, input, true)
-                }}
-                renderItem={(item, isHighlighted) => (
-                  <div
-                    style={isHighlighted ? {...styles.item, background: 'lightgray'} : {...styles.item, background: 'white'}}
-                    key={item.abbr}
-                  >{item.name}</div>
-                )}
-                ref={el => this[`Autocomplete${input}`] = el}
-              />
-              <DatePicker
-                selected={when}
-                onChange={e => this.dateChange(e, input)}
-                key={dpKey}
-                minDate={pickerStart}
-                maxDate={pickerEnd}
-              />
-              {this.state.stops && this.state.stops[index] && stopsHaveForecast &&
-                <span>{this.state.stops[index].weather[0].shortForecast}</span>
-              }
-            </div>
+            return <Location key={`location-${index}`} {...stopInfo} /> 
           })}
           <button onClick={this.appendLocation}>Add a place</button>
           <button onClick={this.validateStops}>Get forecast</button>
@@ -245,4 +206,4 @@ class Locations extends Component {
   }
 }
 
-export default Locations;
+export default LocationsContainer;

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import Locations from './locations';
+import LocationsContainer from './locations-container';
 import './App.css';
 
 class App extends Component {
@@ -9,7 +9,7 @@ class App extends Component {
         <div className="App-header">
           <h2>Road<strong>trip</strong> Fore<strong>cast</strong></h2>
         </div>
-        <Locations />
+        <LocationsContainer />
       </div>
     );
   }
