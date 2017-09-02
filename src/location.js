@@ -4,13 +4,12 @@ import DatePicker from 'react-datepicker'
 import styles from './styles'
 
 let location = (props) => {
-  let { containerKey, label, inputProps, dpKey } = props
+  let { containerKey, inputProps, dpKey } = props
   let { pickerStart, pickerEnd } = props
   let { place, when, suggestions, missing } = props.stop
   inputProps.key = `location-${props.input}`
   return (
-    <div key={containerKey}>
-      <label htmlFor={inputProps.key}>{label}</label>
+    <div key={containerKey} className="location-container shadow">
       {/*put a red outline around empty inputs */}
       <Autocomplete
         inputProps={

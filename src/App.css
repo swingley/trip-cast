@@ -19,10 +19,38 @@
   font-size: large;
 }
 
-label {
-  display: inline-block;
+body {
+  margin: 0;
+  padding: 0;
+  font-family: sans-serif;
+}
+
+.locations-container {
+  display: flex;
+  margin: 0 auto;
+  max-width: 20em;
+  width: 50%;
+}
+
+.lefty {
+  padding: 1em 0 0 0;
   text-align: left;
-  width: 3em;
+}
+
+.loading {
+  margin: 7.5px 0;
+  position: absolute;
+}
+
+.rotate {
+  stroke: #000;
+  stroke-width: 2;
+  animation: rotating 2s ease-in-out infinite;
+  transform-origin: 25px 25px;
+}
+@keyframes rotating {
+  from { transform: rotate(0deg) }
+  to   { transform: rotate(360deg) }
 }
 
 input[type="text"] {
@@ -31,7 +59,7 @@ input[type="text"] {
   margin: 10px 10px 0 10px;
   border: none;
   border-bottom: 1px solid #ccc;
-  width: 8em;
+  width: 7em;
 }
 
 input[type="text"].missing {
@@ -41,11 +69,26 @@ input[type="text"].missing {
 button {
   padding: 10px;
   background: white;
-  border: 1px solid #ccc;
+  /*border: 1px solid #ccc;*/
+  border: none;
   border-radius: 3px;
   font-size: 20px;
   margin: 10px 0 10px 10px;
 }
 button:hover {
   background: #eee;
+}
+
+.shadow {
+  box-shadow: 0 1px 3px 0 rgba(0,0,0,0.16), 0 0 0 1px rgba(0,0,0,0.04);
+  transition: box-shadow .3s ease-in-out;
+}
+.shadow:hover {
+  box-shadow: 0 2px 6px 0 rgba(0,0,0,0.16), 0 0 0 1px rgba(0,0,0,0.04);
+}
+
+.location-container {
+  border-radius: 3px;
+  margin: 10px;
+  padding: 10px;
 }

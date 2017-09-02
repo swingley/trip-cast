@@ -9,11 +9,6 @@ import { twoStops } from './stateOptions'
 
 import '../node_modules/react-datepicker/dist/react-datepicker.css'
 
-let stopLabels = [
-  '1st', '2nd', '3rd', '4th', '5th', 
-  '6th', '7th', '8th', '9th', '10th'
-]
-
 let dateForamt = 'YYYY-MM-DD'
 let nwsDateFormat = 'YYYY-MM-DDThh:mm:ssZ'
 
@@ -173,7 +168,6 @@ class LocationsContainer extends Component {
           {this.state.inputs.map((input, index) => {
             let stopInfo = {
               containerKey: `container-${input}`,
-              label: `${stopLabels[input]}:`,
               dpKey: `when-${input}`,
               input: input,
               placeChange: this.placeChange,
@@ -187,8 +181,8 @@ class LocationsContainer extends Component {
             // console.log(`${label} suggestions:  ${JSON.stringify(suggestions)}`)
             return <Location key={`location-${index}`} {...stopInfo} /> 
           })}
-          <button onClick={this.appendLocation}>Add a place</button>
-          <button onClick={this.validateStops}>Get forecast</button>
+          <button onClick={this.appendLocation} className="shadow">Add a place</button>
+          <button onClick={this.validateStops} className="shadow">Get forecast</button>
           {loading} 
           {stopsHaveForecast && 
             <div className='lefty'>
