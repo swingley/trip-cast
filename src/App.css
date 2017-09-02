@@ -1,6 +1,5 @@
 .App {
   font-size: 20px;
-  text-align: center;
 }
 
 .App-header {
@@ -8,6 +7,7 @@
   height: 50px;
   padding: 20px;
   color: white;
+  text-align: center;
 }
 
 .App-header h2 {
@@ -27,9 +27,25 @@ body {
 
 .locations-container {
   display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
   margin: 0 auto;
   max-width: 20em;
   width: 50%;
+}
+.locations-header {
+  flex: 0 1 100%;
+  text-align: center;
+}
+
+.location-container {
+  border-radius: 3px;
+  flex: 0 1 100%;
+  margin: 10px;
+  padding: 10px;
+}
+.location-forecast {
+  margin: 10px 0 0 20px;
 }
 
 .lefty {
@@ -69,11 +85,11 @@ input[type="text"].missing {
 button {
   padding: 10px;
   background: white;
-  /*border: 1px solid #ccc;*/
   border: none;
   border-radius: 3px;
   font-size: 20px;
   margin: 10px 0 10px 10px;
+  flex: 1 1 47%;
 }
 button:hover {
   background: #eee;
@@ -85,10 +101,4 @@ button:hover {
 }
 .shadow:hover {
   box-shadow: 0 2px 6px 0 rgba(0,0,0,0.16), 0 0 0 1px rgba(0,0,0,0.04);
-}
-
-.location-container {
-  border-radius: 3px;
-  margin: 10px;
-  padding: 10px;
 }

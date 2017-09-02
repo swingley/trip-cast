@@ -158,43 +158,43 @@ class LocationsContainer extends Component {
     }, true)
     let loading = null
     if ( this.state.isFetching ) {
-      loading = <Spinner />
+      loading = <div><Spinner /></div>
     }
 
     return (
       <div className="locations-container">
         <div className="locations-header">
           <h2>Wheres</h2>
-          {this.state.inputs.map((input, index) => {
-            let stopInfo = {
-              containerKey: `container-${input}`,
-              dpKey: `when-${input}`,
-              input: input,
-              placeChange: this.placeChange,
-              stop: this.state.stops[input],
-              pickerStart: moment(),
-              pickerEnd: moment().add(10, 'days'),
-              dateChange: this.dateChange,
-              inputProps: { type: 'text' },
-              autoComplete: this[`Autocomplete${input}`]
-            }
-            // console.log(`${label} suggestions:  ${JSON.stringify(suggestions)}`)
-            return <Location key={`location-${index}`} {...stopInfo} /> 
-          })}
-          <button onClick={this.appendLocation} className="shadow">Add a place</button>
-          <button onClick={this.validateStops} className="shadow">Get forecast</button>
-          {loading} 
-          {stopsHaveForecast && 
-            <div className='lefty'>
-              <div>Weather</div>
-              {this.state.stops.map((stop,index) => {
-                return (
-                  <div key={index}>{stop.place}: {stop.weather[0].shortForecast}</div>
-                )
-              })}
-            </div>
-          }
         </div>
+        {this.state.inputs.map((input, index) => {
+          let stopInfo = {
+            containerKey: `container-${input}`,
+            dpKey: `when-${input}`,
+            input: input,
+            placeChange: this.placeChange,
+            stop: this.state.stops[input],
+            pickerStart: moment(),
+            pickerEnd: moment().add(10, 'days'),
+            dateChange: this.dateChange,
+            inputProps: { type: 'text' },
+            autoComplete: this[`Autocomplete${input}`]
+          }
+          // console.log(`${label} suggestions:  ${JSON.stringify(suggestions)}`)
+          return <Location key={`location-${index}`} {...stopInfo} /> 
+        })}
+        <button onClick={this.appendLocation} className="shadow">Add a place</button>
+        <button onClick={this.validateStops} className="shadow">Get forecast</button>
+        {loading} 
+        {stopsHaveForecast && 
+          <div className='lefty'>
+            <div>Weather</div>
+            {this.state.stops.map((stop,index) => {
+              return (
+                <div key={index}>{stop.place}: {stop.weather[0].shortForecast}</div>
+              )
+            })}
+          </div>
+        }
       </div>
     );
   }
