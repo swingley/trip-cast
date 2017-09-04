@@ -25,10 +25,8 @@ class LocationsContainer extends Component {
     // The line above doesn't work since refactoring.
   }
   appendLocation = () => {
-    let { length } = this.state.inputs;
     this.setState({
       ...this.state,
-      inputs: this.state.inputs.concat([length]),
       stops: this.state.stops.concat({ place: '', when: moment().add(1, 'days'), xy: [], suggestions: [] })
     })
   }
@@ -161,7 +159,6 @@ class LocationsContainer extends Component {
     console.log('original and new lengths', this.state.stops.length, updated.length)
     this.setState({
       ...this.state,
-      inputs: updated.map((item, index) => index),
       stops: updated
     })
   }
@@ -176,19 +173,19 @@ class LocationsContainer extends Component {
 
     return (
       <div className="locations-container">
-        {this.state.inputs.map((input, index) => {
+        {this.state.stops.map((stop, index) => {
           let stopInfo = {
-            containerKey: `container-${input}`,
-            dpKey: `when-${input}`,
-            input: input,
+            containerKey: `container-${index}`,
+            dpKey: `when-${index}`,
+            input: index,
             placeChange: this.placeChange,
-            stop: this.state.stops[input],
-            removeStop: () => this.removeStop(input),
+            stop: stop,
+            removeStop: () => this.removeStop(index),
             pickerStart: moment(),
             pickerEnd: moment().add(10, 'days'),
             dateChange: this.dateChange,
             inputProps: { type: 'text' },
-            autoComplete: this[`Autocomplete${input}`]
+            autoComplete: this[`Autocomplete${index}`]
           }
           // console.log(`${label} suggestions:  ${JSON.stringify(suggestions)}`)
           return <Location key={`location-${index}`} {...stopInfo} /> 
