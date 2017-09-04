@@ -10,7 +10,6 @@ let mapzenSearch = `https://search.mapzen.com/v1/autocomplete?boundary.country=U
 
 export default {
   getForecast: function(stop) {
-    console.log('get forecast for ', stop.place);
     return fetch(`${nws}${stop.xy[1]},${stop.xy[0]}/forecast`)
       .then(response => response.json())
 

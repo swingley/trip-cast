@@ -109,6 +109,7 @@ class LocationsContainer extends Component {
     let forecastsRetrieved = 0
     let forecasts = {}
     this.state.stops.forEach(stop => {
+      console.log('forecast', stop.place, stop.xy)
       // console.log(stop.xy, 'on', stop.when.format(dateForamt))
       // parse date from NWS response:
       // let startDate = '2017-07-18T18:00:00-07:00'
