@@ -1,18 +1,28 @@
+* {
+  box-sizing: border-box;
+}
+
 .App {
   font-size: 20px;
 }
 
 .App-header {
-  background-color: #222;
+  /*background-color: #2a87d0;*/
+  display: flex;
+  align-items: center;
+  justify-content: center;
   height: 50px;
-  padding: 20px;
-  color: white;
+  padding: 10px;
+  color: #222;
   text-align: center;
+  box-shadow: 0 1px 3px 0 rgba(0,0,0,0.16), 0 0 0 1px rgba(0,0,0,0.04);
 }
 
 .App-header h2 {
   font-weight: lighter;
   letter-spacing: 0.02em;
+  margin: 0;
+  padding: 0;
 }
 
 .App-intro {
@@ -43,6 +53,15 @@ body {
   flex: 0 1 100%;
   margin: 10px;
   padding: 10px;
+  position: relative;
+}
+.location-container div:nth-child(1), 
+.location-container div:nth-child(2) {
+  width: 50%;
+}
+.location-container svg {
+  position: absolute;
+  right: 10px;
 }
 .location-forecast {
   margin: 10px 0 0 20px;
@@ -88,8 +107,8 @@ button {
   border: none;
   border-radius: 3px;
   font-size: 20px;
-  margin: 10px 0 10px 10px;
-  flex: 1 1 47%;
+  margin: 10px;
+  flex: 1 1 44.25%;
 }
 button:hover {
   background: #eee;
@@ -101,4 +120,11 @@ button:hover {
 }
 .shadow:hover {
   box-shadow: 0 2px 6px 0 rgba(0,0,0,0.16), 0 0 0 1px rgba(0,0,0,0.04);
+}
+
+@media (max-width: 800px) { 
+  .locations-container {
+    max-width: 80%;
+    width: 80%;
+  }
 }

@@ -1,6 +1,7 @@
 import React from 'react'
 import Autocomplete from 'react-autocomplete'
 import DatePicker from 'react-datepicker'
+import Close from './close'
 import styles from './styles'
 
 let location = (props) => {
@@ -11,6 +12,7 @@ let location = (props) => {
   return (
     <div key={containerKey} className="location-container shadow">
       {/*put a red outline around empty inputs */}
+      <Close onClick={props.removeStop} />
       <Autocomplete
         inputProps={
           missing ? 

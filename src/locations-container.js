@@ -7,7 +7,7 @@ import Spinner from './spinner'
 // import { empty, twoStops } from './stateOptions';
 import { twoStops } from './stateOptions'
 
-import '../node_modules/react-datepicker/dist/react-datepicker.css'
+import './react-datepicker-customized.css'
 
 let dateForamt = 'YYYY-MM-DD'
 let nwsDateFormat = 'YYYY-MM-DDThh:mm:ssZ'
@@ -152,6 +152,18 @@ class LocationsContainer extends Component {
       isFetching: true
     })
   }
+  removeStop = (stopId) => {
+    console.log('removing stop', stopId, this)
+    let updated = this.state.stops.slice(0)
+    // Remove the stop.
+    updated = updated.slice(0, stopId).concat(updated.slice(stopId + 1))
+    console.log('original and new lengths', this.state.stops.length, updated.length)
+    this.setState({
+      ...this.state,
+      inputs: updated.map((item, index) => index),
+      stops: updated
+    })
+  }
   render() {
     let stopsHaveForecast = this.state.stops.reduce((forecastsExist, stop) => {
       return stop.hasOwnProperty('weather') && stop.weather[0]
@@ -163,9 +175,6 @@ class LocationsContainer extends Component {
 
     return (
       <div className="locations-container">
-        <div className="locations-header">
-          <h2>Wheres</h2>
-        </div>
         {this.state.inputs.map((input, index) => {
           let stopInfo = {
             containerKey: `container-${input}`,
@@ -173,6 +182,7 @@ class LocationsContainer extends Component {
             input: input,
             placeChange: this.placeChange,
             stop: this.state.stops[input],
+            removeStop: () => this.removeStop(input),
             pickerStart: moment(),
             pickerEnd: moment().add(10, 'days'),
             dateChange: this.dateChange,
