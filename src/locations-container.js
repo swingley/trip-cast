@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import _ from 'underscore'
+import debounce from 'lodash.debounce'
 import moment from 'moment'
 import Location from './location'
 import apis from './utils/apis'
@@ -18,7 +18,7 @@ class LocationsContainer extends Component {
 
   componentWillMount() {
     // Dont' hammer the place search service.
-    this.placeSearch = _.debounce(this.placeSearch.bind(this), 200);
+    this.placeSearch = debounce(this.placeSearch.bind(this), 200);
   }
   componentDidMount() {
     // Figure out how to give focus to first Location component.
