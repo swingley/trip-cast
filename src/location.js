@@ -34,7 +34,6 @@ let location = (props) => {
           props.placeChange(selected, props.input, false)
         }}
         onChange={(event, value) => {
-          //this.setState({ value })
           props.placeChange(event, props.input, true)
         }}
         renderItem={(item, isHighlighted) => (

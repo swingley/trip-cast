@@ -11,8 +11,6 @@ import './react-datepicker-customized.css'
 
 let dateForamt = 'YYYY-MM-DD'
 let nwsDateFormat = 'YYYY-MM-DDThh:mm:ssZ'
-let reLow = /low.*?[0-9]{1,3}/
-let reHigh = /high.*?[0-9]{1,3}/
 let reExtreme = /(low|high).*?[0-9]{1,3}/
 
 class LocationsContainer extends Component {
@@ -166,20 +164,15 @@ class LocationsContainer extends Component {
     })
   }
   removeStop = (stopId) => {
-    console.log('removing stop', stopId, this)
     let updated = this.state.stops.slice(0)
     // Remove the stop.
     updated = updated.slice(0, stopId).concat(updated.slice(stopId + 1))
-    console.log('original and new lengths', this.state.stops.length, updated.length)
     this.setState({
       ...this.state,
       stops: updated
     })
   }
   render() {
-    let stopsHaveForecast = this.state.stops.reduce((forecastsExist, stop) => {
-      return stop.hasOwnProperty('weather') && stop.weather[0]
-    }, true)
     let loading = null
     if ( this.state.isFetching ) {
       loading = <div><Spinner /></div>
@@ -196,7 +189,7 @@ class LocationsContainer extends Component {
             stop: stop,
             removeStop: () => this.removeStop(index),
             pickerStart: moment(),
-            pickerEnd: moment().add(10, 'days'),
+            pickerEnd: moment().add(7, 'days'),
             dateChange: this.dateChange,
             inputProps: { type: 'text' },
             autoComplete: this[`Autocomplete${index}`]
@@ -207,16 +200,6 @@ class LocationsContainer extends Component {
         <button onClick={this.appendLocation} className="shadow">Add a place</button>
         <button onClick={this.validateStops} className="shadow">Get forecast</button>
         {loading} 
-        {stopsHaveForecast && 
-          <div className='lefty'>
-            <div>Weather</div>
-            {this.state.stops.map((stop,index) => {
-              return (
-                <div key={index}>{stop.place}: {stop.weather[0].shortForecast}</div>
-              )
-            })}
-          </div>
-        }
       </div>
     );
   }

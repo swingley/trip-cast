@@ -39,7 +39,7 @@ body {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
-  margin: 0 auto;
+  margin: 10px auto;
   width: 70%;
 }
 .locations-header {
