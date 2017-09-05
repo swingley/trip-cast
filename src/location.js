@@ -54,7 +54,14 @@ let location = (props) => {
       />
       {(props.stop && props.stop.summary) ? (
         <div className="location-forecast">
-          {props.stop.summary}
+          {/* <img src={props.stop.icon} />{props.stop.summary} */}
+          {props.stop.summary.map((s, index) => {
+            return (
+              <div key={`${props.containerKey}-period-${index}`} className="forecast-period">
+                <img alt={s.info} src={s.icon} /> {s.info}
+              </div>
+            )
+          })}
         </div>
       ) : (
         <div className="location-forecast">

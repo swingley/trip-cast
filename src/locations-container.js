@@ -125,13 +125,13 @@ class LocationsContainer extends Component {
             updated.forEach(stop => {
               if ( forecasts[stop.place] ) {
                 stop.forecastResponse = forecasts[stop.place]
-                stop.summary = ''
+                stop.summary = []
                 stop.weather = []
                 let stopDate = stop.when.format(dateForamt)
                 // Loop through periods, find matches.
                 let { periods } = stop.forecastResponse.properties
                 periods.forEach(period => {
-                  // console.log(stop.place, period.shortForecast)
+                  console.log(stop.place, period.shortForecast)
                   let periodMoment = moment(period.endTime, nwsDateFormat)
                   if ( periodMoment.format(dateForamt) === stopDate ) {
                     stop.weather.push(period)
@@ -139,11 +139,16 @@ class LocationsContainer extends Component {
                     // Pull out text like:  low around 69 or high near 78.
                     let periodHasHighOrLow = period.detailedForecast.toLowerCase().match(reExtreme)
                     if ( periodHasHighOrLow ) {
-                      if ( stop.summary ) {
-                        stop.summary += `; ${period.shortForecast}, ${periodHasHighOrLow[0]}`
-                      } else {
-                        stop.summary = `${period.shortForecast}, ${periodHasHighOrLow[0]}`
-                      }
+                      stop.summary.push({
+                        icon: period.icon,
+                        info: `${period.shortForecast}, ${periodHasHighOrLow[0]}`
+                      })
+                      // let nextSummary = `${period.shortForecast}, ${periodHasHighOrLow[0]}`
+                      // if ( stop.summary ) {
+                      //   stop.summary += `; ${nextSummary}`
+                      // } else {
+                      //   stop.summary = nextSummary
+                      // }
                     }
                   }
                 })

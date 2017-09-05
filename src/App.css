@@ -54,13 +54,17 @@ body {
   padding: 10px;
   position: relative;
 }
-/*.location-container div:nth-child(2), 
-.location-container div:nth-child(3) {
-  width: 50%;
-}*/
 .location-container svg {
   position: absolute;
   right: 10px;
+}
+.location-container .forecast-period {
+  margin-top: 10px;
+}
+.location-container .forecast-period img {
+  height: 25px;
+  width: 25px;
+  vertical-align: middle;
 }
 .location-forecast {
   margin: 10px 0 0 20px;
