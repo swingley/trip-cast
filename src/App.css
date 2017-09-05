@@ -40,8 +40,7 @@ body {
   flex-direction: row;
   flex-wrap: wrap;
   margin: 0 auto;
-  max-width: 20em;
-  width: 50%;
+  width: 70%;
 }
 .locations-header {
   flex: 0 1 100%;
@@ -55,10 +54,10 @@ body {
   padding: 10px;
   position: relative;
 }
-.location-container div:nth-child(1), 
-.location-container div:nth-child(2) {
+/*.location-container div:nth-child(2), 
+.location-container div:nth-child(3) {
   width: 50%;
-}
+}*/
 .location-container svg {
   position: absolute;
   right: 10px;
@@ -88,13 +87,20 @@ body {
   to   { transform: rotate(360deg) }
 }
 
+.location-container > div:nth-child(2) {
+  width: calc(100% - 9em);
+}
+.location-container > div.react-datepicker__input-container {
+  width: 7em;
+}
+
 input[type="text"] {
   font-size: 20px;
   padding: 10px 10px 2px 10px;
   margin: 10px 10px 0 10px;
   border: none;
   border-bottom: 1px solid #ccc;
-  width: 7em;
+  width: 95%;
 }
 
 input[type="text"].missing {

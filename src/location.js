@@ -46,6 +46,7 @@ let location = (props) => {
         ref={el => this[`Autocomplete${props.input}`] = el}
       />
       <DatePicker
+        className="date-picker"
         selected={when}
         onChange={e => props.dateChange(e, props.input)}
         key={dpKey}

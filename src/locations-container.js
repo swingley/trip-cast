@@ -133,6 +133,12 @@ class LocationsContainer extends Component {
                   let periodMoment = moment(period.endTime, nwsDateFormat)
                   if ( periodMoment.format(dateForamt) === stopDate ) {
                     stop.weather.push(period)
+
+                    // TODO:  add a summary property that says something like:
+                    // Mostly cloud, low around 69, high near 78.
+                    // Do it with these regexes:
+                    // let reLow = /low.*?[0-9]{1,3}/
+                    // let reHigh = /high.*?[0-9]{1,3}/
                   }
                 })
               }
