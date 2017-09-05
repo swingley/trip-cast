@@ -53,8 +53,10 @@ let location = (props) => {
         minDate={pickerStart}
         maxDate={pickerEnd}
       />
-      {(props.stop && props.stop.weather && props.stop.weather.length > 0) ? (
-        <div className="location-forecast">{props.stop.weather[0].shortForecast}</div>
+      {(props.stop && props.stop.summary) ? (
+        <div className="location-forecast">
+          {props.stop.summary}
+        </div>
       ) : (
         <div className="location-forecast">
           ...forecast will load here.

@@ -11,6 +11,9 @@ import './react-datepicker-customized.css'
 
 let dateForamt = 'YYYY-MM-DD'
 let nwsDateFormat = 'YYYY-MM-DDThh:mm:ssZ'
+let reLow = /low.*?[0-9]{1,3}/
+let reHigh = /high.*?[0-9]{1,3}/
+let reExtreme = /(low|high).*?[0-9]{1,3}/
 
 class LocationsContainer extends Component {
   state = twoStops
@@ -124,6 +127,7 @@ class LocationsContainer extends Component {
             updated.forEach(stop => {
               if ( forecasts[stop.place] ) {
                 stop.forecastResponse = forecasts[stop.place]
+                stop.summary = ''
                 stop.weather = []
                 let stopDate = stop.when.format(dateForamt)
                 // Loop through periods, find matches.
@@ -134,11 +138,15 @@ class LocationsContainer extends Component {
                   if ( periodMoment.format(dateForamt) === stopDate ) {
                     stop.weather.push(period)
 
-                    // TODO:  add a summary property that says something like:
-                    // Mostly cloud, low around 69, high near 78.
-                    // Do it with these regexes:
-                    // let reLow = /low.*?[0-9]{1,3}/
-                    // let reHigh = /high.*?[0-9]{1,3}/
+                    // Pull out text like:  low around 69 or high near 78.
+                    let periodHasHighOrLow = period.detailedForecast.toLowerCase().match(reExtreme)
+                    if ( periodHasHighOrLow ) {
+                      if ( stop.summary ) {
+                        stop.summary += `; ${period.shortForecast}, ${periodHasHighOrLow[0]}`
+                      } else {
+                        stop.summary = `${period.shortForecast}, ${periodHasHighOrLow[0]}`
+                      }
+                    }
                   }
                 })
               }
