@@ -2,7 +2,7 @@ import React from 'react'
 import Autocomplete from 'react-autocomplete'
 import DatePicker from 'react-datepicker'
 import Close from './close'
-import styles from './styles'
+import styles from '../css/styles'
 
 let location = (props) => {
   let { containerKey, inputProps, dpKey } = props

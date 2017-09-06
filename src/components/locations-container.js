@@ -1,13 +1,14 @@
 import React, { Component } from 'react'
 import debounce from 'lodash.debounce'
 import moment from 'moment'
+import LocationsMap from './locations-map'
 import Location from './location'
-import apis from './utils/apis'
 import Spinner from './spinner'
+import apis from '../utils/apis'
 // import { empty, twoStops } from './stateOptions';
-import { twoStops } from './stateOptions'
+import { twoStops } from '../stateOptions'
 
-import './react-datepicker-customized.css'
+import '../css/react-datepicker-customized.css'
 
 let dateForamt = 'YYYY-MM-DD'
 let nwsDateFormat = 'YYYY-MM-DDThh:mm:ssZ'
@@ -204,7 +205,8 @@ class LocationsContainer extends Component {
         })}
         <button onClick={this.appendLocation} className="shadow">Add a place</button>
         <button onClick={this.validateStops} className="shadow">Get forecast</button>
-        {loading} 
+        {loading}
+        <LocationsMap locations={this.state.stops} />
       </div>
     );
   }

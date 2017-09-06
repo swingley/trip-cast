@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import LocationsContainer from './locations-container';
-import './App.css';
+import '../css/App.css';
 
 class App extends Component {
   render() {

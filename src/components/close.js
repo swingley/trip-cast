@@ -1,7 +1,7 @@
 import React from 'react'
 import { FaTimesCircle } from 'react-icons/lib/fa'
 
-import './close.css'
+import '../css/close.css'
 
 let close = (props) => {
   return (
