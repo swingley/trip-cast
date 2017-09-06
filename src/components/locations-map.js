@@ -39,10 +39,11 @@ export default class LocationsMap extends Component {
 
   _resize = () => {
     let width = this.element._eventCanvas.parentElement.offsetWidth - 20;
+    console.log('map resize', width, this.props.height);
     this.setState({
       viewport: {
         ...this.state.viewport,
-        width: width ||this.props.width || window.innerWidth,
+        width: width || this.props.width || window.innerWidth,
         height: this.props.height || window.innerHeight
       }
     });
@@ -54,7 +55,6 @@ export default class LocationsMap extends Component {
   }
 
   _renderCityMarker = (city, index) => {
-    console.log('city', city);
     if ( city.xy.length === 0 ) {
       return;
     }

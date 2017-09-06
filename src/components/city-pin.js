@@ -17,7 +17,7 @@ export default class CityPin extends PureComponent {
 
     return (
       <svg height={size} viewBox='0 0 24 24'
-        style={{...pinStyle, transform: `translate(${-size/2}px,${-size}px)`}}
+        style={{...pinStyle, transform: `translate(0px,${-size}px)`}}
         onClick={onClick} >
         <path d={ICON}/>
       </svg>

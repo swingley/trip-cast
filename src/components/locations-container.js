@@ -206,7 +206,7 @@ class LocationsContainer extends Component {
         <button onClick={this.appendLocation} className="shadow">Add a place</button>
         <button onClick={this.validateStops} className="shadow">Get forecast</button>
         {loading}
-        <LocationsMap locations={this.state.stops} />
+        <LocationsMap locations={this.state.stops} height={300} />
       </div>
     );
   }
