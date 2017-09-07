@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
-import {render} from 'react-dom';
-import MapGL, {Marker, Popup, NavigationControl} from 'react-map-gl';
+import MapGL, {Marker, Popup} from 'react-map-gl';
+
+import '../css/map.css';
 
 import CityPin from './city-pin';
 import CityInfo from './city-info';

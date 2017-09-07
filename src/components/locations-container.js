@@ -40,6 +40,7 @@ class LocationsContainer extends Component {
     let updated = this.state.stops.slice(0)
     updated[index].place = e.target.value
     delete updated[index].missing
+    delete updated[index].summary
     if ( e.target.coordinates && e.target.coordinates.length === 2 ) {
       updated[index].xy = e.target.coordinates
     }
@@ -54,6 +55,10 @@ class LocationsContainer extends Component {
   dateChange = (date, index) => {
     let updated = this.state.stops.slice(0)
     updated[index].when = date
+    // Change the forecast too.
+    if ( updated[index].forecastResponse ) {
+      this.findStopPeriods(updated[index])
+    }
     this.setState({
       ...this.state,
       stops: updated
@@ -80,7 +85,7 @@ class LocationsContainer extends Component {
     // Call forecast() if all is right.
     // If not, set new state with a missing: true on each empty stop.
     // Make input border red if they're empty. 
-    // TODO:  check dates too.
+    // TODO:  check dates too?
     
     let missingPlaces = []
     this.state.stops.forEach((stop, index) => {
@@ -102,6 +107,28 @@ class LocationsContainer extends Component {
     } else {
       this.forecast()
     } 
+  }
+  findStopPeriods = (stop) => {
+    stop.summary = []
+    stop.weather = []
+    let stopDate = stop.when.format(dateForamt)
+    // Loop through periods, find matches.
+    stop.forecastResponse.properties.periods.forEach(period => {
+      console.log(stop.place, period.shortForecast)
+      let periodMoment = moment(period.endTime, nwsDateFormat)
+      if ( periodMoment.format(dateForamt) === stopDate ) {
+        stop.weather.push(period)
+
+        // Pull out text like:  "low around 69" or "high near 78".
+        let periodHasHighOrLow = period.detailedForecast.toLowerCase().match(reExtreme)
+        if ( periodHasHighOrLow ) {
+          stop.summary.push({
+            icon: period.icon,
+            info: `${period.shortForecast}, ${periodHasHighOrLow[0]}`
+          })
+        }
+      }
+    })
   }
   forecast = () => {
     // All stops have places, get forecasts.
@@ -126,33 +153,7 @@ class LocationsContainer extends Component {
             updated.forEach(stop => {
               if ( forecasts[stop.place] ) {
                 stop.forecastResponse = forecasts[stop.place]
-                stop.summary = []
-                stop.weather = []
-                let stopDate = stop.when.format(dateForamt)
-                // Loop through periods, find matches.
-                let { periods } = stop.forecastResponse.properties
-                periods.forEach(period => {
-                  console.log(stop.place, period.shortForecast)
-                  let periodMoment = moment(period.endTime, nwsDateFormat)
-                  if ( periodMoment.format(dateForamt) === stopDate ) {
-                    stop.weather.push(period)
-
-                    // Pull out text like:  low around 69 or high near 78.
-                    let periodHasHighOrLow = period.detailedForecast.toLowerCase().match(reExtreme)
-                    if ( periodHasHighOrLow ) {
-                      stop.summary.push({
-                        icon: period.icon,
-                        info: `${period.shortForecast}, ${periodHasHighOrLow[0]}`
-                      })
-                      // let nextSummary = `${period.shortForecast}, ${periodHasHighOrLow[0]}`
-                      // if ( stop.summary ) {
-                      //   stop.summary += `; ${nextSummary}`
-                      // } else {
-                      //   stop.summary = nextSummary
-                      // }
-                    }
-                  }
-                })
+                this.findStopPeriods(stop)
               }
             })
             // console.log('updated', updated)
@@ -190,7 +191,7 @@ class LocationsContainer extends Component {
           let stopInfo = {
             containerKey: `container-${index}`,
             dpKey: `when-${index}`,
-            input: index,
+            stopKey: index,
             placeChange: this.placeChange,
             stop: stop,
             removeStop: () => this.removeStop(index),
@@ -200,7 +201,6 @@ class LocationsContainer extends Component {
             inputProps: { type: 'text' },
             autoComplete: this[`Autocomplete${index}`]
           }
-          // console.log(`${label} suggestions:  ${JSON.stringify(suggestions)}`)
           return <Location key={`location-${index}`} {...stopInfo} /> 
         })}
         <button onClick={this.appendLocation} className="shadow">Add a place</button>

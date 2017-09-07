@@ -114,7 +114,7 @@ input[type="text"].missing {
   border: 1px solid #ff8585;
 }
 
-button {
+.locations-container > button {
   padding: 10px;
   background: white;
   border: none;
@@ -123,7 +123,7 @@ button {
   margin: 10px;
   flex: 1 1 44.25%;
 }
-button:hover {
+.locations-container > button:hover {
   background: #eee;
 }
 

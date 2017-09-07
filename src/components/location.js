@@ -8,7 +8,7 @@ let location = (props) => {
   let { containerKey, inputProps, dpKey } = props
   let { pickerStart, pickerEnd } = props
   let { place, when, suggestions, missing } = props.stop
-  inputProps.key = `location-${props.input}`
+  inputProps.key = `location-${props.stopKey}`
   return (
     <div key={containerKey} className="location-container shadow">
       {/*put a red outline around empty inputs */}
@@ -31,10 +31,10 @@ let location = (props) => {
               coordinates: item.coordinates
             }
           }
-          props.placeChange(selected, props.input, false)
+          props.placeChange(selected, props.stopKey, false)
         }}
         onChange={(event, value) => {
-          props.placeChange(event, props.input, true)
+          props.placeChange(event, props.stopKey, true)
         }}
         renderItem={(item, isHighlighted) => (
           <div
@@ -42,12 +42,12 @@ let location = (props) => {
             key={item.abbr}
           >{item.name}</div>
         )}
-        ref={el => this[`Autocomplete${props.input}`] = el}
+        ref={el => this[`Autocomplete${props.stopKey}`] = el}
       />
       <DatePicker
         className="date-picker"
         selected={when}
-        onChange={e => props.dateChange(e, props.input)}
+        onChange={e => props.dateChange(e, props.stopKey)}
         key={dpKey}
         minDate={pickerStart}
         maxDate={pickerEnd}
