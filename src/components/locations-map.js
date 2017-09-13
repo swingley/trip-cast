@@ -1,23 +1,25 @@
 import React, {Component} from 'react';
 import MapGL, {Marker, Popup} from 'react-map-gl';
 
-import '../css/map.css';
-
 import CityPin from './city-pin';
 import CityInfo from './city-info';
+
+import locationHelpers from '../utils/locations';
 
 import keys from '../keys'
 
 import '../../node_modules/mapbox-gl/dist/mapbox-gl.css'
+import '../css/map.css';
 
 export default class LocationsMap extends Component {
 
   constructor(props) {
     super(props);
+    let center = locationHelpers.centerOnLocations(props.locations);
     this.state = {
       viewport: {
-        latitude: 37.785164,
-        longitude: -100,
+        latitude: center[1],
+        longitude: center[0],
         zoom: 3.5,
         bearing: 0,
         pitch: 0,
@@ -26,21 +28,34 @@ export default class LocationsMap extends Component {
         scrollZoom: false
       },
       popupInfo: null
-    };
+    }
   }
 
-  componentDidMount() {
+  componentDidMount = () => {
     window.addEventListener('resize', this._resize);
     this._resize();
   }
 
-  componentWillUnmount() {
+  componentWillUnmount = () => {
     window.removeEventListener('resize', this._resize);
+  }
+
+  componentWillReceiveProps = (nextProps) => {
+    let center = locationHelpers.centerOnLocations(nextProps.locations);
+    let { latitude, longitude } = this.state.viewport;
+    if ( center[1] !== latitude || center[0] !== longitude ) {
+      this._updateViewport({
+        ...this.state.viewport,
+        latitude: center[1],
+        longitude: center[0]
+      });
+      // console.log('new center, updated state', center);
+    }
   }
 
   _resize = () => {
     let width = this.element._eventCanvas.parentElement.offsetWidth - 20;
-    console.log('map resize', width, this.props.height);
+    // console.log('map resize', width, this.props.height);
     this.setState({
       viewport: {
         ...this.state.viewport,
@@ -82,10 +97,8 @@ export default class LocationsMap extends Component {
     );
   }
 
-  render() {
-
-    const {viewport} = this.state;
-
+  render = () => {
+    const { viewport } = this.state;
     return (
       <MapGL
         {...viewport}

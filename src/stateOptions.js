@@ -11,7 +11,7 @@ export let twoStops = {
   stops: [{ 
     place: 'San Diego, CA', when: moment().add(1, 'days'), xy: [-117.1611, 32.7157], suggestions: []
   }, { 
-    place: 'Redding, CA', when: moment().add(1, 'days'), xy: [-122.3917, 40.5865], suggestions: []
+    place: 'Muncie, IN', when: moment().add(1, 'days'), xy: [-85.394431, 40.200456], suggestions: []
   }], 
   startDate: moment(),
   isFetching: false

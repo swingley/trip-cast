@@ -4,3 +4,6 @@
 .mapboxgl-popup-close-button {
   font-size: 16px !important;
 }
+.mapboxgl-ctrl-logo {
+  display: none !important;
+}

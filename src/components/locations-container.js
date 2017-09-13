@@ -83,9 +83,8 @@ class LocationsContainer extends Component {
     // Places and dates:
     // Check if any boxes are empty.
     // Call forecast() if all is right.
-    // If not, set new state with a missing: true on each empty stop.
+    // If not, set new state with 'missing': true on each empty stop.
     // Make input border red if they're empty. 
-    // TODO:  check dates too?
     
     let missingPlaces = []
     this.state.stops.forEach((stop, index) => {
@@ -114,7 +113,7 @@ class LocationsContainer extends Component {
     let stopDate = stop.when.format(dateForamt)
     // Loop through periods, find matches.
     stop.forecastResponse.properties.periods.forEach(period => {
-      console.log(stop.place, period.shortForecast)
+      // console.log(stop.place, period.shortForecast)
       let periodMoment = moment(period.endTime, nwsDateFormat)
       if ( periodMoment.format(dateForamt) === stopDate ) {
         stop.weather.push(period)
@@ -136,7 +135,7 @@ class LocationsContainer extends Component {
     let forecastsRetrieved = 0
     let forecasts = {}
     this.state.stops.forEach(stop => {
-      console.log('forecast', stop.place, stop.xy)
+      // console.log('forecast', stop.place, stop.xy)
       // console.log(stop.xy, 'on', stop.when.format(dateForamt))
       // parse date from NWS response:
       // let startDate = '2017-07-18T18:00:00-07:00'
