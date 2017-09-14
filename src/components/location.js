@@ -19,6 +19,7 @@ let location = (props) => {
             { className: 'missing', ...inputProps } :
             inputProps
         }
+        wrapperProps={{ className: "location-search" }}
         value={place}
         items={suggestions}
         getItemValue={(item) => item.name}

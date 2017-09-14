@@ -141,3 +141,19 @@ input[type="text"].missing {
     width: 80%;
   }
 }
+
+@media (max-width: 400px) { 
+  .locations-container {
+    margin: 1% auto;
+    max-width: 98%;
+    width: 98%;
+  }
+  .location-container > div.location-search,
+  .location-container > div.react-datepicker__input-container {
+    display: block;
+    width: 100%;
+  }
+  .loading {
+    position: static;
+  }
+}
