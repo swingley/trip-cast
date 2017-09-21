@@ -1,5 +1,5 @@
 import React from 'react'
-import { FaTimesCircle } from 'react-icons/lib/fa'
+import FaTimesCircle from 'react-icons/lib/fa/times-circle'
 
 import '../css/close.css'
 
