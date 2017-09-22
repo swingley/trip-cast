@@ -28,7 +28,6 @@ class LocationsContainer extends Component {
   }
   appendLocation = () => {
     this.setState({
-      ...this.state,
       stops: this.state.stops.concat({ place: '', when: moment().add(1, 'days'), xy: [], suggestions: [] })
     })
   }
@@ -45,7 +44,6 @@ class LocationsContainer extends Component {
       updated[index].xy = e.target.coordinates
     }
     this.setState({
-      ...this.state,
       stops: updated
     })
     if ( search ) {
@@ -60,7 +58,6 @@ class LocationsContainer extends Component {
       this.findStopPeriods(updated[index])
     }
     this.setState({
-      ...this.state,
       stops: updated
     })
   }
@@ -74,7 +71,6 @@ class LocationsContainer extends Component {
         let updated = this.state.stops.slice(0)
         updated[index].suggestions = labels
         this.setState({
-          ...this.state,
           stops:updated
         })
       })
@@ -99,7 +95,6 @@ class LocationsContainer extends Component {
         updated[index].missing = true
       })
       this.setState({
-        ...this.state,
         stops: updated
       })
       return
@@ -157,7 +152,6 @@ class LocationsContainer extends Component {
             })
             // console.log('updated', updated)
             this.setState({
-              ...this.state,
               isFetching: false,
               stops: updated
             })
@@ -165,7 +159,6 @@ class LocationsContainer extends Component {
         })
     })
     this.setState({
-      ...this.state,
       isFetching: true
     })
   }
@@ -174,7 +167,6 @@ class LocationsContainer extends Component {
     // Remove the stop.
     updated = updated.slice(0, stopId).concat(updated.slice(stopId + 1))
     this.setState({
-      ...this.state,
       stops: updated
     })
   }
