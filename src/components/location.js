@@ -47,6 +47,7 @@ let location = (props) => {
       />
       <DatePicker
         className="date-picker"
+        readOnly={true}
         selected={when}
         onChange={e => props.dateChange(e, props.stopKey)}
         key={dpKey}

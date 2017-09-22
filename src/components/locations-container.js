@@ -197,7 +197,12 @@ class LocationsContainer extends Component {
             pickerStart: moment(),
             pickerEnd: moment().add(7, 'days'),
             dateChange: this.dateChange,
-            inputProps: { type: 'text' },
+            inputProps: { 
+              type: 'text',
+              autoCapitalize: 'off',
+              autoComplete: 'off',
+              autoCorrect: 'off'
+            },
             autoComplete: this[`Autocomplete${index}`]
           }
           return <Location key={`location-${index}`} {...stopInfo} /> 
