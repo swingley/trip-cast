@@ -66,7 +66,7 @@ class LocationsContainer extends Component {
     apis.getPlaces(place)
       .then(json => {
         let labels = json.features.map(f => { 
-          return { name: f.properties.label, coordinates: f.geometry.coordinates }
+          return { name: f.place_name, coordinates: f.geometry.coordinates }
         })
         let updated = this.state.stops.slice(0)
         updated[index].suggestions = labels
