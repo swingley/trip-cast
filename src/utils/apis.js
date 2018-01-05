@@ -5,8 +5,8 @@ let nws = `https://api.weather.gov/points/`
 // What does the NWS API call for this look like?
 // https://api.weather.gov/points/40.5865,-122.3917/forecast
 
-// Only search administrative areas in the US.
-let mapzenSearch = `https://search.mapzen.com/v1/autocomplete?boundary.country=US&layers=coarse&api_key=${keys.mapzen}`
+let mapboxSearch = `https://api.mapbox.com/geocoding/v5/mapbox.places/`
+let mapboxToken = `?access_token=${keys.mapbox}`
 
 export default {
   getForecast: function(stop) {
@@ -15,7 +15,7 @@ export default {
 
   },
   getPlaces: function(place) {
-    return fetch(`${mapzenSearch}&text=${place}`)
+    return fetch(`${mapboxSearch}${encodeURIComponent(place)}.json${mapboxToken}`)
       .then(response => response.json())
   }
 }
